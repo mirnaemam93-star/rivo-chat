@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>RIVO — Messaging</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #080b0d;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 480px;
+      min-height: 100vh;
+      margin: auto;
+      background: #101416;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 22px 18px 14px;
+      background: #111719;
+      border-bottom: 1px solid #202729;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: #39d98a;
+    }
+
+    .icons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 14px;
+      background: #1a2224;
+      color: white;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .search {
+      margin-top: 15px;
+      background: #1a2224;
+      border-radius: 15px;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #8e9a9d;
+    }
+
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: white;
+      font-size: 15px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .tab {
+      flex: 1;
+      border: 0;
+      padding: 10px;
+      border-radius: 12px;
+      background: #182022;
+      color: #9da9ab;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #39d98a;
+      color: #07120d;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 12px 12px 90px;
+    }
+
+    .section-title {
+      padding: 12px 5px;
+      color: #8d999c;
+      font-size: 13px;
+    }
+
+    .chat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 10px;
+      border-radius: 17px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .chat:hover {
+      background: #182022;
+    }
+
+    .avatar {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #39d98a, #15734b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .chat-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-name {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .message {
+      color: #899598;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-meta {
+      text-align: left;
+      color: #738083;
+      font-size: 11px;
+    }
+
+    .unread {
+      display: inline-flex;
+      margin-top: 7px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 20px;
+      align-items: center;
+      justify-content: center;
+      background: #39d98a;
+      color: #07120d;
+      font-weight: bold;
+    }
+
+    .bottom {
+      position: fixed;
+      bottom: 0;
+      width: min(480px, 100%);
+      height: 76px;
+      background: rgba(17, 23, 25, .97);
+      border-top: 1px solid #202729;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .nav {
+      border: 0;
+      background: transparent;
+      color: #788588;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-icon {
+      font-size: 22px;
+    }
+
+    .nav.active {
+      color: #39d98a;
+    }
+
+    .fab {
+      position: fixed;
+      right: calc(50% - 215px);
+      bottom: 92px;
+      width: 58px;
+      height: 58px;
+      border: 0;
+      border-radius: 19px;
+      background: #39d98a;
+      color: #06120c;
+      font-size: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+      cursor: pointer;
+      z-index: 15;
+    }
+
+    @media (max-width: 480px) {
+      .fab {
+        right: 18px;
+      }
+    }
+
+    .empty {
+      display: none;
+      text-align: center;
+      padding: 70px 20px;
+      color: #788588;
+    }
+
+    .empty-icon {
+      font-size: 45px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="top">
+      <div class="logo">RI<span>VO</span></div>
+
+      <div class="icons">
+        <button class="icon-btn" onclick="alert('البحث قادم في الإصدار القادم 🔎')">⌕</button>
+        <button class="icon-btn" onclick="alert('قائمة RIVO')">⋮</button>
+      </div>
+    </div>
+
+    <div class="search">
+      🔎
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="ابحث في محادثاتك..."
+        oninput="searchChats()"
+      >
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('chats', this)">الدردشات</button>
+      <button class="tab" onclick="showTab('groups', this)">المجموعات</button>
+      <button class="tab" onclick="showTab('stories', this)">الحالات</button>
+    </div>
+  </header>
+
+  <main>
+
+    <div id="chats">
+
+      <div class="section-title">المحادثات الأخيرة</div>
+
+      <div class="chat" data-name="أحمد">
+        <div class="avatar">أ</div>
+
+        <div class="chat-info">
+          <div class="chat-name">أحمد</div>
+          <div class="message">عامل إيه؟ 👋</div>
+        </div>
+
+        <div class="chat-meta">
+          10:42 م
+          <div class="unread">2</div>
+        </div>
+      </div>
+
+      <div class="chat" data-name="أصحاب المدرسة">
+        <div class="avatar">👥</div>
+
+        <div class="chat-info">
+          <div class="chat-name">أصحاب المدرسة</div>
+          <div class="message">محمد: تمام يا شباب</div>
+        </div>
+
+        <div class="chat-meta">
+          9:31 م
+          <div class="unread">5</div>
+        </div>
+      </div>
+
+      <div class="chat" data-name="Mohamed">
+        <div class="avatar">M</div>
+
+        <div class="chat-info">
+          <div class="chat-name">Mohamed</div>
+          <div class="message">📷 صورة</div>
+        </div>
+
+        <div class="chat-meta">
+          أمس
+        </div>
+      </div>
+
+      <div class="chat" data-name="RIVO Team">
+        <div class="avatar">R</div>
+
+        <div class="chat-info">
+          <div class="chat-name">RIVO Team</div>
+          <div class="message">مرحبًا بك في RIVO 🚀</div>
+        </div>
+
+        <div class="chat-meta">
+          أمس
+        </div>
+      </div>
+
+    </div>
+
+    <div id="groups" class="empty">
+      <div class="empty-icon">👥</div>
+      <h3>المجموعات</h3>
+      <p>هنا هتظهر مجموعاتك في الإصدارات القادمة.</p>
+    </div>
+
+    <div id="stories" class="empty">
+      <div class="empty-icon">⭕</div>
+      <h3>الحالات</h3>
+      <p>شارك لحظاتك مع أصدقائك.</p>
+    </div>
+
+  </main>
+
+  <button class="fab" onclick="newChat()">＋</button>
+
+  <nav class="bottom">
+
+    <button class="nav active">
+      <span class="nav-icon">💬</span>
+      الدردشات
+    </button>
+
+    <button class="nav" onclick="alert('الحالات قريبًا 📸')">
+      <span class="nav-icon">◉</span>
+      الحالات
+    </button>
+
+    <button class="nav" onclick="alert('المكالمات قريبًا 📞')">
+      <span class="nav-icon">☎</span>
+      المكالمات
+    </button>
+
+    <button class="nav" onclick="alert('الإعدادات قريبًا ⚙️')">
+      <span class="nav-icon">⚙</span>
+      الإعدادات
+    </button>
+
+  </nav>
+
+</div>
+
+<script>
+
+  function showTab(tab, button) {
+
+    document.getElementById("chats").style.display = "none";
+    document.getElementById("groups").style.display = "none";
+    document.getElementById("stories").style.display = "none";
+
+    document.getElementById(tab).style.display =
+      tab === "chats" ? "block" : "block";
+
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+  }
+
+  function searchChats() {
+
+    const query =
+      document.getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+    document.querySelectorAll(".chat").forEach(chat => {
+
+      const name =
+        chat.dataset.name.toLowerCase();
+
+      chat.style.display =
+        name.includes(query) ? "flex" : "none";
+
+    });
+  }
+
+  function newChat() {
+    alert("هنا هنضيف إنشاء محادثة جديدة 👤\nالميزة هتتربط بالحسابات الحقيقية لاحقًا.");
+  }
+
+</script>
+
+</body>
+  </html>
